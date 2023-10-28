@@ -4,12 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        img {
+            max-width: 100%;
+        }
+        .return-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Result</h1>
-
-    <h2>Gray Image:</h2>
-    <img src="data:image/jpeg;base64,{{ image_bytes }}">
-    <p>Return <a href="{{ url_for('index') }}"></a></p>
+    <div class="container">
+        <h1>Image Result</h1>
+        <h2>Gray Image:</h2>
+        <img src="data:image/jpeg;base64,{{ image_bytes }}" alt="Gray Image">
+        <p>Return <a class="return-link" href="{{ url_for('index') }}">back to the homepage</a></p>
+    </div>
 </body>
 </html>
+

@@ -4,6 +4,7 @@ import uuid
 import json
 from flask import Flask
 import hashlib
+import face_recognition
 app = Flask(__name__)
 def read_user():
     with open(os.path.join(app.root_path,"data/user.json"),
@@ -54,19 +55,33 @@ class ImageController:
             if user["username"].strip() == username.strip() and user["password"]==password:
                 return user
         return None
+    def face_validate(frame):
+        match=[]
+        users=read_user()
+        user_face_encodings = []
+        for user in users:
+            registered_face = face_recognition.load_image_file(user["image_path"])
+            registered_face_encoding = face_recognition.face_encodings(registered_face)[0]
+            user_face_encodings.append(registered_face_encoding)
+        face_locations = face_recognition.face_locations(frame)
+        if face_locations:
+            face_encoding = face_recognition.face_encodings(frame, face_locations)[0]
+            match = face_recognition.compare_faces(user_face_encodings, face_encoding)
+        return match
     def user_exists(username):
         users=read_user()
         for user in users:
             if user["username"].strip() == username.strip():
                 return user
         return None
-    def add_user(username,password):
+    def add_user(username,path):
         users=read_user()
         user = {
             "id": len(users)+1,
             "username":username.strip(),
-            "password":password.strip()
+            "image_path":path.strip()
         }
+        print(users)
         users.append(user)
         with open(os.path.join(app.root_path,"data/user.json"),"w",encoding="utf-8") as f:
             json.dump(users,f,ensure_ascii=False,indent=4)

@@ -4,13 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        .upload-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button:hover {
+            background-color: #0056b3;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            display: block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        label:hover {
+            background-color: #0056b3;
+        }
+        #selected-image {
+            max-width: 100%;
+            max-height: 300px; /* Điều chỉnh kích thước tối đa của hình ảnh */
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Processing</h1>
+    <div class="container">
+        <h1>Image Processing</h1>
+        <form method="POST" action="/fdetect" enctype="multipart/form-data">
+            <label for="file">Select an image</label>
+            <input type="file" name="image" id="file" accept=".jpg, .jpeg, .png" required>
+            <img id="selected-image" src="" alt="Selected Image" style="display: none;"> <!-- Thêm ảnh ẩn -->
+            <button class="upload-button" type="submit">Face Detect</button>
+        </form>
+    </div>
     
-    <form method="POST" action="/fdetect" enctype="multipart/form-data">
-        <input type="file" name="image" accept=".jpg, .jpeg, .png" required>
-        <button type="submit">Face Detect</button>
-    </form>
+    <script>
+        const fileInput = document.getElementById("file");
+        const selectedImage = document.getElementById("selected-image");
+        
+        fileInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const imageURL = URL.createObjectURL(file);
+                selectedImage.src = imageURL;
+                selectedImage.style.display = "block"; // Hiển thị hình ảnh
+            } else {
+                selectedImage.src = ""; // Xóa hình ảnh nếu không có tệp được chọn
+                selectedImage.style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,10 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .logout-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Processing</h1>
-    <p>Convert RGB to Gray <a href="{{ url_for('upload') }}">Choose</a></p>
-    <p>Face detect <a href="{{ url_for('fdetect') }}">Choose</a></p>    
+    <div class="container">
+        <h1>Image Processing</h1>
+        <p>Convert RGB to Gray <a href="{{ url_for('upload') }}">Choose</a></p>
+        <p>Face Detect <a href="{{ url_for('fdetect') }}">Choose</a></p>
+        <form method="POST" action="/logout">
+            <button class="logout-button" type="submit">Logout</button>
+        </form>
+    </div>
 </body>
 </html>
+
