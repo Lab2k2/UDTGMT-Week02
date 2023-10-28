@@ -34,17 +34,30 @@
         #register-button:hover {
             background-color: #0056b3;
         }
+        .alert{
+            color: blue;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
         <h1>Register</h1>
         <form method="POST" action="/register" enctype="multipart/form-data">
-            <input type="text" name="user_name" placeholder="Your Name" required style="width: 100%;">
+            <input type="text" name="user_name" placeholder="username" required style="width: 100%;">
+            <br><br>
+            <input type="password" name="pass_word" placeholder="password" required style="width: 100%;">
             <br><br>
             <input type="file" name="user_image" accept="image/*" required style="width: 100%;">
             <br><br>
             <button id="register-button" type="submit">Register</button>
+            <br><br>
+            {% if err_msg %}
+            <div class="alert alert-danger">
+            {{ err_msg}}
+            </div> 
+            {% endif %}
+            <p>Already have an account? <a id="register-link" href="/">Login</a></p>
         </form>
     </div>
 </body>

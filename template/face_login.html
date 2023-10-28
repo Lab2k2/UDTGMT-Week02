@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Page</title>
+    <title>Face Login Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,18 +43,19 @@
             text-decoration: none;
         }
         .alert{
-            color: #ff4000;
+            color: red;
             text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h1>Login</h1>
-        <form method="POST" action="/login">
+        <h1>Face Login</h1>
+        <div id="camera-container">
+            <img id="video" src="{{ url_for('video_feed') }}" alt="Camera">
+        </div>
+        <form method="POST" action="/face_login">
             <input type="text" name="user_name" placeholder="username" required style="width: 100%;">
-            <br><br>
-            <input type="password" name="pass_word" placeholder="password" required style="width: 100%;">
             <br><br>
             <button id="login-button" type="submit">Login</button>
             <br><br>
@@ -64,12 +65,7 @@
         {{ err_msg}}
         </div> 
         {% endif %}
-        <p>Forgot Password? <a id="register-link" href="/facelogin_page">Face Login</a></p>
         <p>Don't have an account? <a id="register-link" href="/register">Register</a></p>
     </div>
 </body>
 </html>
-
-
-
-
