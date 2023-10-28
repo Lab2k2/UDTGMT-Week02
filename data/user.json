@@ -1,32 +1,14 @@
 [
     {
         "id": 1,
-        "username": "harry",
-        "password": "000000",
-        "image_path": "static/image\\harry.jpg"
-    },
-    {
-        "id": 2,
-        "username": "namthien",
-        "password": "123456",
-        "image_path": "static/image\\namthien.jpg"
-    },
-    {
-        "id": 3,
-        "username": "ngokhong007",
-        "password": "wukong",
-        "image_path": "static/image\\ngokhong007.jpg"
-    },
-    {
-        "id": 4,
-        "username": "dumbledore",
-        "password": "magicisreal",
-        "image_path": "static/image\\dumbledore.jpg"
-    },
-    {
-        "id": 5,
         "username": "johnwick",
         "password": "e10c552614949bfeb22435dec1bed3be",
         "image_path": "static/image\\johnwick.jpg"
+    },
+    {
+        "id": 2,
+        "username": "vonguyengiap",
+        "password": "1abb5f0958ac22ab3e36dde268281bcb",
+        "image_path": "static/image\\vonguyengiap.jpg"
     }
 ]
