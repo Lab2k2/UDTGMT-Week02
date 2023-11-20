@@ -10,5 +10,17 @@
         "username": "vonguyengiap",
         "password": "1abb5f0958ac22ab3e36dde268281bcb",
         "image_path": "static/image\\vonguyengiap.jpg"
+    },
+    {
+        "id": 3,
+        "username": "tomandjerry",
+        "password": "548c277c2f6c2bef5724373626256ce1",
+        "image_path": "static/image\\tomandjerry.jpg"
+    },
+    {
+        "id": 4,
+        "username": "namthien",
+        "password": "e10adc3949ba59abbe56e057f20f883e",
+        "image_path": "static/image\\namthien.jpg"
     }
 ]

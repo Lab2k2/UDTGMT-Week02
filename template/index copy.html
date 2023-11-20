@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Brightness Adjuster</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Brightness Adjuster</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if filename %}
+        <img id="preview" src="{{ url_for('static', filename='uploads/original.jpg') }}" alt="Original Image">
+        <br>
+        <label for="brightness">Brightness:</label>
+        <input type="range" id="brightness" name="brightness" min="0" max="3" step="0.1" value="1" oninput="updateBrightness(this.value)">
+        <span id="brightnessValue">1.0</span>
+        <br>
+        <form action="{{ url_for('adjust_light', filename=filename) }}" method="post">
+            <input type="hidden" name="brightness" id="brightnessHidden" value="1.0">
+            <button type="submit">Download</button>
+        </form>
+    {% else %}
+        <form action="/uploads" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".jpg, .jpeg">
+            <br>
+            <button type="submit">Upload Image</button>
+        </form>
+    {% endif %}
+
+    <script>
+        function updateBrightness(value) {
+            document.getElementById('brightnessValue').innerText = value;
+            document.getElementById('brightnessHidden').value = value;
+
+            // Hiển thị trước ảnh khi thay đổi độ sáng
+            document.getElementById('preview').style.filter = `brightness(${value})`;
+        }
+    </script>
+</body>
+</html>
+

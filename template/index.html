@@ -3,60 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing</title>
+    <title>Image Brightness Adjuster</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-image: url("{{ url_for('static', filename='background.jpg') }}");
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
             text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            width: 400px;
         }
-        p {
-            margin: 10px 0;
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            max-height: 70vh; /* Thêm thuộc tính để giới hạn chiều cao của ảnh */
+            max-width: 70vw; /* Thêm thuộc tính để giới hạn chiều rộng của ảnh */
+            object-fit: contain; /* Đảm bảo ảnh hiển thị toàn bộ trong khung */
         }
-        a {
-            text-decoration: none;
-            color: #007bff;
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+            background-color: red;
         }
-        a:hover {
-            text-decoration: underline;
-        }
-        .logout-button {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .logout-button:hover {
-            background-color: #c82333;
+
+        .toolbar button {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Image Processing</h1>
-        <p>Convert RGB to Gray <a href="{{ url_for('upload') }}">Choose</a></p>
-        <p>Face Detect <a href="{{ url_for('fdetect') }}">Choose</a></p>
-        <form method="POST" action="/logout">
-            <button class="logout-button" type="submit">Logout</button>
+    <h1>Image Brightness Adjuster</h1>
+
+    <!-- ... (Các điều kiện hiển thị ảnh và form) -->
+
+    {% if filename %}
+        <img id="preview" src="{{ url_for('static', filename='uploads/original.jpg') }}" alt="Original Image">
+        <div class="toolbar">
+            <button onclick="convertToGray()">Convert to Gray</button>
+            <button onclick="detectFaces()">Detect Faces</button>
+            <button onclick="applySRGAN()">SRGAN</button>
+            <button onclick="cropImage()">Crop Image</button>
+            <input type="range" id="brightness" name="brightness" min="0" max="3" step="0.1" value="1" oninput="updateBrightness(this.value)">
+            <label for="brightness">Brightness:</label>
+            <span id="brightnessValue">1.0</span>
+        </div>
+        <form action="{{ url_for('adjust_light', filename=filename) }}" method="post">
+            <input type="hidden" name="brightness" id="brightnessHidden" value="1.0">
+            <br>
+            <button type="submit">Download</button>
         </form>
-    </div>
+    {% else %}
+        <form action="/uploads" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".jpg, .jpeg">
+            <br>
+            <button type="submit">Upload Image</button>
+        </form>
+    {% endif %}
+
+    <script>
+        function updateBrightness(value) {
+            document.getElementById('brightnessValue').innerText = value;
+            document.getElementById('brightnessHidden').value = value;
+
+            document.getElementById('preview').style.filter = `brightness(${value})`;
+        }
+
+        function convertToGray() {
+            // Code xử lý chuyển ảnh sang grayscale
+        }
+
+        function detectFaces() {
+            // Code xử lý phát hiện khuôn mặt
+        }
+
+        function applySRGAN() {
+            // Code xử lý áp dụng SRGAN
+        }
+
+        function cropImage() {
+            // Code xử lý cắt ảnh
+        }
+    </script>
 </body>
 </html>
-

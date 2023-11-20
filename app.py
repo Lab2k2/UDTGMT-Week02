@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, Response, redirect, url_for
+from flask import Flask, render_template, request, Response, redirect, url_for,send_file, jsonify
 import cv2
 import face_recognition
 import numpy as np
 import os
 import base64
 from controller import ImageController
+from PIL import Image, ImageEnhance
+from io import BytesIO
 app = Flask(__name__,template_folder='template')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 err_msg=""
@@ -136,6 +138,59 @@ def fdetect():
         return render_template("fdetect.html")
     else:
         return redirect(url_for('login_page'))
+def adjust_brightness(image, factor):
+    enhancer = ImageEnhance.Brightness(image)
+    enhanced_image = enhancer.enhance(factor)
+    return enhanced_image
+def crop_img(image,a,b):
+    return 0
+@app.route('/uploads', methods=['POST'])
+def uploads():
+    global login_status
+    if login_status:
+        if 'file' not in request.files:
+            return render_template('index.html', error='No file part')
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return render_template('index.html', error='No selected file')
+
+        if file:
+            filename = 'original.jpg'
+            filepath = "static/"+f"{app.config['UPLOAD_FOLDER']}/{filename}"
+            file.save(filepath)
+
+            return render_template('index.html', filename=filename)
+    else:
+        return redirect(url_for('login_page'))
+@app.route('/adjust_light/<filename>', methods=['POST'])
+def adjust_light(filename):
+    factor = float(request.form['brightness'])
+    filepath = "static/"+f"{app.config['UPLOAD_FOLDER']}/{filename}"
+
+    image = Image.open(filepath)
+    enhanced_image = adjust_brightness(image, factor)
+
+    output = BytesIO()
+    enhanced_image.save(output, format='JPEG')
+    output.seek(0)
+
+    return send_file(output, as_attachment=True, download_name='enhanced.jpg', mimetype='image/jpeg')
+@app.route('/crop/<filename>', methods=['POST'])
+def crop(filename):
+    factor = float(request.form['crop'])
+    filepath = f"{app.config['UPLOAD_FOLDER']}/{filename}"
+
+    image = Image.open(filepath)
+    enhanced_image = crop_img(image, factor)
+
+    output = BytesIO()
+    enhanced_image.save(output, format='JPEG')
+    output.seek(0)
+
+    return send_file(output, as_attachment=True, download_name='enhanced.jpg', mimetype='image/jpeg')
+
 if __name__ == '__main__':
     app.run(debug=True)
 
