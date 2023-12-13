@@ -5,12 +5,17 @@ import json
 from flask import Flask
 import hashlib
 import face_recognition
+from PIL import Image
+import io
+import base64
+
 app = Flask(__name__)
 def read_user():
     with open(os.path.join(app.root_path,"data/user.json"),
             encoding="utf-8") as f:
             data=json.load(f)
     return data
+
 class ImageController:
     def __init__(self, upload_folder):
         self.upload_folder = upload_folder
@@ -19,7 +24,20 @@ class ImageController:
     def create_upload_folder(self):
         if not os.path.exists(self.upload_folder):
             os.makedirs(self.upload_folder)
+    def change64toimg(imgdata):
+        # Tách phần dữ liệu base64 từ chuỗi
+        img_data = imgdata.split(',')[1]
 
+        # Giải mã chuỗi base64 để lấy dữ liệu hình ảnh
+        image_data = base64.b64decode(img_data)
+
+        # Tạo một đối tượng hình ảnh từ dữ liệu hình ảnh
+        img = Image.open(io.BytesIO(image_data))
+        # Tách phần dữ liệu base64 từ chuỗi
+
+        # Lưu hình ảnh dưới định dạng JPG
+        img.save("face.jpg", "JPEG")
+        return img
     def upload_image(self, file):
         if file:
             file_extension = file.filename.split(".")[-1]
@@ -68,6 +86,7 @@ class ImageController:
             matches = face_recognition.compare_faces(user_face_encodings, face_encoding)
         return matches
     def facelogin_validate(username,frame):
+        frame= face_recognition.load_image_file("face.jpg")
         users=read_user()
         matches=[]
         user_face_encodings = []

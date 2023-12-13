@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Face Login Page</title>
+    <script defer src="/static/face-api.min.js"></script>
+    <script defer src="/static/script.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +20,8 @@
             margin: 0;
         }
         .login-container {
+            width: 40%;
+            height: 90%;
             text-align: center;
             background-color: #fff;
             padding: 20px;
@@ -51,13 +58,14 @@
 <body>
     <div class="login-container">
         <h1>Face Login</h1>
-        <div id="camera-container">
-            <img id="video" src="{{ url_for('video_feed') }}" alt="Camera">
-        </div>
+
+        <video id="video" width="400" height="400"  autoplay></video>
+        <br><br>
+        <br><br>
         <form method="POST" action="/face_login">
             <input type="text" name="user_name" placeholder="username" required style="width: 100%;">
             <br><br>
-            <button id="login-button" type="submit">Login</button>
+            <button id="login-button" type="button">Login</button>
             <br><br>
         </form>
         {% if err_msg %}

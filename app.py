@@ -7,7 +7,7 @@ import base64
 from controller import ImageController
 from PIL import Image, ImageEnhance
 from io import BytesIO
-app = Flask(__name__,template_folder='template')
+app = Flask(__name__,template_folder='template',static_folder='static')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 err_msg=""
 # Biến lưu trạng thái đăng nhập
@@ -73,12 +73,16 @@ def face_login():
     global login_status
     global err_msg
     err_msg=""
-    # Đọc hình ảnh từ video
-    success, frame = camera.read()
-    if success:
-        username = request.form['user_name']
-        matche=ImageController.facelogin_validate(username,frame)
+    if 'image' in request.form:
+        image_file = request.form['image']
+        image=ImageController.change64toimg(image_file)
+        if image_file != '':
+            username = request.form['username']
+            print(username)
+        matche=ImageController.facelogin_validate(username,image)
+        print(matche)
         if True in matche:
+            print(0)
             login_status = True
             return redirect(url_for('index'))
         else: err_msg="DANG NHAP THAT BAI"
