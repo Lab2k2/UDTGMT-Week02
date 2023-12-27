@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Restored Web</title>
+    <style>
+        body {
+
+            background-image: url("{{ url_for('static', filename='login_ground.jpg') }}");
+            background-size: cover;
+            background-position: center;
+
+            text-align: center;
+
+        }
+
+        img {
+            max-width: 70%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            max-height: 70vh; /* Thêm thuộc tính để giới hạn chiều cao của ảnh */
+            max-width: 70vw; /* Thêm thuộc tính để giới hạn chiều rộng của ảnh */
+            object-fit: contain; /* Đảm bảo ảnh hiển thị toàn bộ trong khung */
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+            background-color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .toolbar button {
+            margin-right: 10px;
+        }
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333; /* Màu nền header */
+            color: white;
+        }
+        
+        .logout-container {
+            margin-left: auto; /* Đẩy nút logout sang phải */
+        }
+        
+        .logout-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 style="color:white;">Image Restore</h1>
+        <div class="logout-container">
+            <form method="POST" action="/logout">
+                <button class="logout-button" type="submit">Logout</button>
+            </form>
+        </div>
+    </header>
+    <input type="file" id="fileInput" accept=".jpg, .jpeg">
+    <button onclick="uploadImage()">Upload Image</button>
+
+    <img id="preview" src="" alt="">
+
+    <div class="toolbar" style="display: none;">
+        <button onclick="ImageEnhance()">Enhance</button>       
+        <button onclick="ImageRestored()">Unblurred</button>
+        <button onclick="toggleConvertToGray()">Convert to Gray</button>
+        <button onclick="rotateImage()">Rotate Image</button>
+        <button onclick="flipImage()">Flip Image</button>
+
+        <label for="brightness">Brightness:</label>
+        <input type="range" id="brightness" name="brightness" min="0" max="3" step="0.1" value="1" oninput="updateBrightness(this.value)">
+        <span id="brightnessValue">1.0</span>
+
+        <button onclick="downloadCurrentImage()">Download</button>
+    </div>
+    <script>
+        let rotationAngle = 0;
+        let flipState = false;
+        let imgTransform = '';
+        let isGray = false;
+        let grayImg = '';
+
+        function ImageEnhance(){
+            fetch('/image_enhance', {
+                method: 'POST',
+                body: JSON.stringify({ image: grayImg }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('preview').src = `data:image/jpeg;base64, ${data.image}`;
+                newImg = data.image;
+            })
+            .catch(error => console.error('Error:', error));
+            applyTransform();
+        }
+        function ImageRestored(){
+            fetch('/image_restored', {
+                method: 'POST',
+                body: JSON.stringify({ image: grayImg }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('preview').src = `data:image/jpeg;base64, ${data.image}`;
+                newImg = data.image;
+            })
+            .catch(error => console.error('Error:', error));
+            applyTransform();
+        }
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('preview').src = `data:image/jpeg;base64, ${data.image}`;
+                grayImg = data.image;
+                document.querySelector('.toolbar').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function toggleConvertToGray() {
+            if (isGray) {
+                document.getElementById('preview').src = `data:image/jpeg;base64, ${grayImg}`;
+                isGray = false;
+            } else {
+                convertToGray();
+            }
+        }
+
+        function convertToGray() {
+            fetch('/convert_to_gray', {
+                method: 'POST',
+                body: JSON.stringify({ image: grayImg }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('preview').src = `data:image/jpeg;base64, ${data.image}`;
+                grayImg = data.image;
+                isGray = true;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function rotateImage() {
+            rotationAngle += 90;
+            imgTransform = `rotate(${rotationAngle}deg) ${flipState ? 'scaleX(-1)' : 'scaleX(1)'}`;
+            applyTransform();
+        }
+
+        function flipImage() {
+            flipState = !flipState;
+            imgTransform = `rotate(${rotationAngle}deg) ${flipState ? 'scaleX(-1)' : 'scaleX(1)'}`;
+            applyTransform();
+        }
+
+        function applyTransform() {
+            const img = document.getElementById('preview');
+            img.style.transform = imgTransform;
+        }
+        function updateBrightness(value) {
+            document.getElementById('brightnessValue').innerText = value;
+            applyBrightness(value);
+        }
+
+        function applyBrightness(value) {
+            const img = document.getElementById('preview');
+            img.style.filter = `brightness(${value}) ${imgTransform}`;
+        }
+
+        function downloadCurrentImage() {
+            const img = document.getElementById('preview');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.filter = img.style.filter;
+
+            ctx.drawImage(img, 0, 0);
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = canvas.toDataURL('image/jpeg');
+            downloadLink.download = 'edited_image.jpg';
+            downloadLink.click();
+        }
+    </script>
+    </script>
+</body>
+</html>

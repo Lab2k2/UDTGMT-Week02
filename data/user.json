@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "username": "johnwick",
+        "password": "e10c552614949bfeb22435dec1bed3be",
+        "image_path": "static/image\\johnwick.jpg"
+    },
+    {
+        "id": 2,
+        "username": "vonguyengiap",
+        "password": "1abb5f0958ac22ab3e36dde268281bcb",
+        "image_path": "static/image\\vonguyengiap.jpg"
+    },
+    {
+        "id": 3,
+        "username": "tomandjerry",
+        "password": "548c277c2f6c2bef5724373626256ce1",
+        "image_path": "static/image\\tomandjerry.jpg"
+    },
+    {
+        "id": 4,
+        "username": "namthien",
+        "password": "e10adc3949ba59abbe56e057f20f883e",
+        "image_path": "static/image\\namthien.jpg"
+    },
+    {
+        "id": 5,
+        "username": "nobita",
+        "password": "568a5102ea18148f420330386303e84b",
+        "image_path": "static/image\\nobita.jpg"
+    },
+    {
+        "id": 6,
+        "username": "thienpro",
+        "password": "4297f44b13955235245b2497399d7a93",
+        "image_path": "static/image\\thienpro.jpg"
+    },
+    {
+        "id": 7,
+        "username": "concho",
+        "password": "24a9436e411b4b755576e97bac9d408f",
+        "image_path": "static/image\\concho.jpg"
+    }
+]
