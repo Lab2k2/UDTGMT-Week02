@@ -77,7 +77,7 @@ class Predictor:
 
 def main(img_pattern: str,
          mask_pattern: Optional[str] = None,
-         weights_path='fpn_inception.h5',
+         weights_path='pretrained_model/fpn_inception.h5',
          out_dir='submit/',
          side_by_side: bool = False,
          video: bool = False):

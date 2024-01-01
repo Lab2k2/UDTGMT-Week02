@@ -12,7 +12,8 @@
             background-position: center;
 
             text-align: center;
-
+            margin: 0;
+            padding: 0;
         }
 
         img {
@@ -63,15 +64,38 @@
         .logout-button:hover {
             background-color: #c82333;
         }
+
+        .change-password-container {
+            margin-left: 0;
+        }
+        
+        .change-password-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .change-password-button:hover {
+            background-color: #c82333;
+        }
+        
     </style>
 </head>
 <body>
     <header class="header">
-        <h1 style="color:white;">Image Restore</h1>
+        <h1 style="color:white;">Home</h1>
         <div class="logout-container">
             <form method="POST" action="/logout">
                 <button class="logout-button" type="submit">Logout</button>
             </form>
+        </div>
+        <div class="change-password-container">
+            <a href="/changepassword">
+                <button class="logout-button" type="button">Change Password</button>
+            </a>
         </div>
     </header>
     <input type="file" id="fileInput" accept=".jpg, .jpeg">
@@ -217,7 +241,6 @@
             downloadLink.download = 'edited_image.jpg';
             downloadLink.click();
         }
-    </script>
     </script>
 </body>
 </html>

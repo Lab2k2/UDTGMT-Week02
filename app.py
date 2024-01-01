@@ -8,7 +8,7 @@ from controller import ImageController
 from PIL import Image, ImageEnhance
 from io import BytesIO
 import Unblurred
-import fastSrgan
+import esrgan
 
 app = Flask(__name__,template_folder='template',static_folder='static')
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -111,6 +111,28 @@ def register():
             err_msg= "Registration successful!"
             return render_template('register.html',err_msg=err_msg)
     return render_template('register.html')
+@app.route('/changepassword', methods=['GET', 'POST'])
+def change_password():
+    global login_status
+    global err_msg
+    err_msg=""
+    if request.method == 'POST':
+        username = request.form['user_name']
+        old_password = request.form['pass_word']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        val=ImageController.user_validate(username,old_password)
+        print(val)
+        if True == val:
+            if new_password == confirm_password:
+                # Cập nhật mật khẩu trong cơ sở dữ liệu
+                result = ImageController.change_password(username, new_password)
+                return redirect(url_for('index'))
+            else:
+                err_msg="MAT KHAU MOI VA XAC NHAN MAT KHAU KHONG TRUNG KHOP"
+        else:
+            err_msg="SAI TEN NGUOI DUNG HOAC MAT KHAU"
+    return render_template('changepassword.html', err_msg = err_msg)
 @app.route('/upload', methods=['POST'])
 def upload():
     global login_status
@@ -160,7 +182,7 @@ def image_enhance():
     with open(dir_in, 'wb') as file:
         file.write(img_data)
     
-    fastSrgan.srgan(dir_in)
+    esrgan.esrgan(dir_in)
     with open(dir_out, "rb") as file:
         new_img = file.read()
         img_str = base64.b64encode(new_img).decode('utf-8')

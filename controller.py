@@ -121,3 +121,14 @@ class ImageController:
         with open(os.path.join(app.root_path,"data/user.json"),"w",encoding="utf-8") as f:
             json.dump(users,f,ensure_ascii=False,indent=4)
         return user
+
+    def change_password(user_name,new_pass_word):
+        users=read_user()
+        for user in users:
+            if user["username"] == user_name:
+                # Cập nhật mật khẩu
+                user["password"]=str(hashlib.md5(new_pass_word.strip().encode("utf-8")).hexdigest())
+                break
+        with open(os.path.join(app.root_path, "data/user.json"), "w", encoding="utf-8") as f:
+            json.dump(users, f, ensure_ascii=False, indent=4)
+        return True
