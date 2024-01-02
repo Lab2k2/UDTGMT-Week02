@@ -30,6 +30,5 @@ def esrgan(image_path):
         output = model(img_LR).data.squeeze().float().cpu().clamp_(0, 1).numpy()
     output = np.transpose(output[[2, 1, 0], :, :], (1, 2, 0))
     output = (output * 255.0).round()
-    cv2.imwrite('submit/test.jpg', output)
+    cv2.imwrite('static/Process/new.jpg', output)
 
-esrgan('test.jpg')

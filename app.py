@@ -15,12 +15,14 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 err_msg=""
 # Biến lưu trạng thái đăng nhập
 login_status = False
-
-# Biến lưu trữ hình ảnh từ máy ảnh
-camera = cv2.VideoCapture(0)
+dir_in='static/Process/origin.jpg'
+dir_out='static/Process/new.jpg'
 
 # Hàm để truyền video từ máy ảnh vào trang web
 def generate_frames():
+    
+# Biến lưu trữ hình ảnh từ máy ảnh
+    camera = cv2.VideoCapture(0)
     while True:
         success, frame = camera.read()  # Đọc frame từ máy ảnh
         if not success:
@@ -141,6 +143,10 @@ def upload():
             if file:
                 img_data = file.read()
                 img_str = base64.b64encode(img_data).decode('utf-8')
+                with open(dir_in, 'wb') as file:
+                    file.write(img_data)
+                with open(dir_out, 'wb') as file:
+                    file.write(img_data)
                 return jsonify({'image': img_str})
             return jsonify({'error': 'No file uploaded'})
     else:
@@ -149,26 +155,26 @@ def upload():
 def convert_to_gray():
     img_data = request.json.get('image')  # Nhận dữ liệu ảnh từ client
     img_data = base64.b64decode(img_data)  # Giải mã dữ liệu ảnh từ base64
+    with open(dir_out, "rb") as file:
+        img_data = file.read()
+    
     nparr = np.frombuffer(img_data, np.uint8)  # Chuyển đổi thành mảng numpy
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Đọc ảnh từ mảng numpy
-    
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Chuyển đổi ảnh sang ảnh xám
 
     # Chuyển lại ảnh xám thành dạng base64 để gửi về client
     _, buffer = cv2.imencode('.jpg', gray_img)
     gray_img_str = base64.b64encode(buffer).decode('utf-8')
-
+    gray_data = base64.b64decode(gray_img_str)  # Giải mã dữ liệu ảnh từ base64
+    with open(dir_out, 'wb') as file:
+        file.write(gray_data)
     return jsonify({'image': gray_img_str})
 @app.route('/image_restored', methods=['POST'])
 def image_restored():
     img_data = request.json.get('image')  # Nhận dữ liệu ảnh từ client
     img_data = base64.b64decode(img_data)  # Giải mã dữ liệu ảnh từ base64
-    dir_in='test.jpg'
-    dir_out='submit/test.jpg'
-    with open(dir_in, 'wb') as file:
-        file.write(img_data)
     
-    Unblurred.debulr(dir_in)
+    Unblurred.debulr(dir_out)
     with open(dir_out, "rb") as file:
         new_img = file.read()
         img_str = base64.b64encode(new_img).decode('utf-8')
@@ -177,17 +183,65 @@ def image_restored():
 def image_enhance():
     img_data = request.json.get('image')  # Nhận dữ liệu ảnh từ client
     img_data = base64.b64decode(img_data)  # Giải mã dữ liệu ảnh từ base64
-    dir_in='test.jpg'
-    dir_out='submit/test.jpg'
-    with open(dir_in, 'wb') as file:
-        file.write(img_data)
     
-    esrgan.esrgan(dir_in)
+    esrgan.esrgan(dir_out)
     with open(dir_out, "rb") as file:
         new_img = file.read()
         img_str = base64.b64encode(new_img).decode('utf-8')
     return jsonify({'image': img_str})
+@app.route('/image_compare', methods=['POST'])
+def image_compare():
+    state = request.json.get('number')  # Nhận state từ client
+    if (state % 2)==0:
+        with open(dir_out, "rb") as file:
+            new_img = file.read()
+            img_str = base64.b64encode(new_img).decode('utf-8')
+    else:
+        with open(dir_in, "rb") as file:
+            new_img = file.read()
+            img_str = base64.b64encode(new_img).decode('utf-8')
+    return jsonify({'image': img_str})
+@app.route('/image_brightness', methods=['POST'])
+def image_brightness():
+    brightness = float(request.json.get('number'))  # Nhận value từ client
+    with open(dir_out, "rb") as file:
+        img_data = file.read()
+    # Chuyển đổi mảng bytes thành mảng numpy
+    nparr = np.frombuffer(img_data, np.uint8)
 
+    # Đọc ảnh từ mảng numpy
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    #Chuyển dữ liệu ảnh hiện tại
+    with open(dir_in, "rb") as file:
+        new_img = file.read()
+        img_str = base64.b64encode(new_img).decode('utf-8')
+    # Áp dụng độ sáng cho ảnh
+    if brightness != 0:
+        if brightness > 0:
+            shadow = brightness
+            highlight = 255
+        else:
+            shadow = 0
+            highlight = 255 + brightness
+
+        alpha_b = (highlight - shadow) / 255
+        gamma_b = shadow
+
+        # Áp dụng công thức độ sáng
+        calibrated_image = cv2.addWeighted(img, alpha_b, img, 0, gamma_b)
+
+        # Chuyển đổi ảnh thành base64 để gửi lại cho client
+        retval, buffer = cv2.imencode('.jpg', calibrated_image)
+        img_base64 = base64.b64encode(buffer).decode('utf-8') #dữ liệu ảnh mới
+    
+        img_datanew = base64.b64decode(img_base64)
+        
+        with open(dir_out, 'wb') as file: #Lưu ảnh lại ở new.jpg
+            file.write(img_datanew)    
+            
+        return jsonify({'image': img_base64})
+    
+    return jsonify({'image': img_str})
 @app.route("/fdetect", methods=["GET", "POST"])
 def fdetect():
     global login_status
