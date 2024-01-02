@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Face Login Page</title>
-    <script defer src="/static/face-api.min.js"></script>
-    <script defer src="/static/script.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,7 +19,7 @@
         }
         .login-container {
             width: 40%;
-            height: 90%;
+            height: 100%;
             text-align: center;
             background-color: #fff;
             padding: 20px;
@@ -34,7 +32,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        #login-button {
+        #login-button2 {
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -42,7 +40,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        #login-button:hover {
+        #login-button2:hover {
             background-color: #0056b3;
         }
         #register-link {
@@ -62,10 +60,11 @@
         <video id="video" width="400" height="400"  autoplay></video>
         <br><br>
         <br><br>
-        <form method="POST" action="/face_login">
-            <input type="text" name="user_name" placeholder="username" required style="width: 100%;">
+        <form class="submitform" method="POST" action="/face_login"  onsubmit="event.preventDefault(); captureAndSubmit()">
+
+            <input id="user_name" type="text" name="user_name" placeholder="username" required style="width: 100%;">
             <br><br>
-            <button id="login-button" type="button" onclick="reload()">Login</button>
+            <button id="login-button2" type="submit" >Login</button>
             <br><br>
         </form>
         {% if err_msg %}
@@ -75,5 +74,46 @@
         {% endif %}
         <p>Don't have an account? <a id="register-link" href="/register">Register</a></p>
     </div>
+    <script>
+        function captureAndSubmit() {
+            
+
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frameData = canvas.toDataURL('image/jpeg');
+
+            const username = document.getElementById('user_name').value;
+            console.log(username)
+            console.log(typeof(frameData))
+            //Tắt video
+            stopVideo()
+            // Tạo formData chứa hình ảnh và username để gửi lên server
+            const formData = new FormData();
+            formData.append('frame_data', frameData);
+            formData.append('user_name', username);
+            fetch('/face_login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data=='SUCCESSED')
+                    window.location="/index"
+                else
+                    window.location="/index2"
+                
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+    </script>
+    <script defer src="/static/face-api.min.js"></script>
+    <script defer src="/static/script.js"></script>
 </body>
 </html>

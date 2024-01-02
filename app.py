@@ -44,8 +44,9 @@ def login_page():
 @app.route('/facelogin_page')
 def facelogin_page():
     global login_status
+    print(err_msg)
     if login_status:
-        return redirect(url_for('index'))
+        return render_template('index.html')
     return render_template('face_login.html',err_msg=err_msg)
 @app.route('/index')
 def index():
@@ -53,6 +54,12 @@ def index():
     if login_status:
         return render_template('index.html')
     return redirect(url_for('login_page'))
+@app.route('/index2')
+def index2():
+    global login_status
+    if login_status:
+        return render_template('index.html')
+    return redirect(url_for('facelogin_page'))
 
 @app.route('/video_feed')
 def video_feed():
@@ -71,27 +78,27 @@ def login():
         if True == val:
             login_status = True
             return redirect(url_for('index'))
-        else: err_msg="DANG NHAP THAT BAI"
+        else: err_msg="LOGIN FAILED"
     return redirect(url_for('login_page'))
 @app.route('/face_login', methods=['POST'])
 def face_login():
     global login_status
     global err_msg
     err_msg=""
-    if 'image' in request.form:
-        image_file = request.form['image']
-        image=ImageController.change64toimg(image_file)
-        if image_file != '':
-            username = request.form['username']
-            print(username)
-        matche=ImageController.facelogin_validate(username,image)
-        print(matche)
-        if True in matche:
-            print(0)
-            login_status = True
-            return redirect(url_for('index'))
-        else: err_msg="DANG NHAP THAT BAI"
-    return redirect(url_for('facelogin_page'))
+    # Nhận dữ liệu từ request
+    user_name = request.form['user_name']
+    print(user_name)
+    frame_data = request.form['frame_data']
+    image=ImageController.change64toimg(frame_data)
+    matche=ImageController.facelogin_validate(user_name,image)
+    print(matche)
+    if True in matche:
+        login_status = True
+        err_msg="LOGIN SUCCESSED"
+        return jsonify('SUCCESSED')
+    else:
+        err_msg="LOGIN FAILED"
+        return jsonify('FAILED')
 @app.route('/logout', methods=['POST'])
 def logout():
     global login_status
